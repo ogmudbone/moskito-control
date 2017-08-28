@@ -12,6 +12,7 @@ import org.moskito.control.core.status.Status;
 import org.moskito.controlagent.data.accumulator.AccumulatorHolder;
 import org.moskito.controlagent.data.accumulator.AccumulatorListItem;
 import org.moskito.controlagent.data.info.SystemInfo;
+import org.moskito.controlagent.data.producers.ProducerInfo;
 import org.moskito.controlagent.data.status.ThresholdInfo;
 import org.moskito.controlagent.data.status.ThresholdStatusHolder;
 import org.moskito.controlagent.data.threshold.ThresholdDataItem;
@@ -155,6 +156,14 @@ public class RMIConnector extends AbstractConnector {
 
 	}
 
+	public List<ProducerInfo> getProducers(){
+		try {
+			return theOtherSideEndpoint.getStatsInfo();
+		} catch (AgentServiceException e) {
+			throw new ConnectorException("Couldn't obtain info from server at "+location);
+		}
+	}
+
 	/**
 	 * Maps agent threshold item to internally used control item.
 	 * @param agentItem
@@ -184,6 +193,15 @@ public class RMIConnector extends AbstractConnector {
 
 	public boolean supportsAccumulators(){
 		return true;
+	}
+
+	public static void main(String[] args){
+		RMIConnector connector = new RMIConnector();
+		connector.configure("localhost:9450", "lol");
+
+		List<ProducerInfo> producerInfos = connector.getProducers();
+		int lol = 5;
+
 	}
 
 }

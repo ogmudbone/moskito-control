@@ -13,6 +13,7 @@ import org.moskito.control.connectors.response.ConnectorStatusResponse;
 import org.moskito.control.connectors.response.ConnectorThresholdsResponse;
 import org.moskito.control.core.HealthColor;
 import org.moskito.control.core.status.Status;
+import org.moskito.controlagent.data.producers.ProducerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +57,8 @@ public class HttpConnector extends AbstractConnector {
     private static final String OP_ACCUMULATORS = "accumulators";
 
     private static final String OP_INFO = "info";
+
+    private static final String OP_PRODUCERS = "producers";
 
     /**
 	 * Target applications url.
@@ -239,6 +243,32 @@ public class HttpConnector extends AbstractConnector {
 		infoMap.put("Updays", replyMap.get("updays"));
 
 		return infoMap;
+
+	}
+
+	public List<ProducerInfo> getProducers(){
+
+		try {
+			Map httpResponseMap = getTargetData(OP_PRODUCERS);
+
+			if (httpResponseMap == null) {
+				return new LinkedList<>();
+			}
+
+			return (List<ProducerInfo>) httpResponseMap.get("reply");
+		} catch (IOException | ClassCastException e) {
+			throw new ConnectorException("Couldn't obtain info from server at " + location);
+		}
+	}
+
+	public static void main(String[] args){
+
+		HttpConnector connector = new HttpConnector();
+		connector.configure("localhost:8080", "lol");
+
+		List<ProducerInfo> producerInfos = connector.getProducers();
+		int lol = 5;
+
 
 	}
 
